@@ -1,7 +1,9 @@
 mod config;
-mod handler;
+mod handlers;
 mod response;
 mod route;
+mod structs;
+mod utils;
 
 use config::Config;
 use std::sync::Arc;
@@ -16,9 +18,10 @@ use tower_http::cors::CorsLayer;
 
 use mongodb::{options::ClientOptions, Client};
 
+#[derive(Debug)]
 pub struct AppState {
     env: Config,
-    db: Client,
+    db: mongodb::Database,
 }
 
 #[tokio::main]
@@ -36,15 +39,15 @@ async fn main() {
     let db = client.database(database_name);
 
     // Print the databases in our MongoDB cluster:
-    println!("Databases:");
+    println!("📙 Databases:");
     for name in client.list_database_names(None, None).await.unwrap() {
         println!("- {}", name);
     }
 
     // Print the collections in our database:
-    println!("Collections:");
+    println!("📌 Collections:");
     for collection_name in db.list_collection_names(None).await.unwrap() {
-        println!("{}", collection_name);
+        println!("- {}", collection_name);
     }
 
     let cors = CorsLayer::new()
@@ -54,7 +57,7 @@ async fn main() {
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
     let app = create_router(Arc::new(AppState {
-        db: client,
+        db: db,
         env: config.clone(),
     }))
     .layer(cors);
