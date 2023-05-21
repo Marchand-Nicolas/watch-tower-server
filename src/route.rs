@@ -30,5 +30,9 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/change_password",
             post(handlers::user::change_password::change_password_handler),
         )
+        .route(
+            "/get_logs",
+            post(handlers::logs_user_side::get_logs::get_logs_handler),
+        )
         .with_state(app_state)
 }

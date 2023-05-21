@@ -10,3 +10,10 @@ pub struct Claims {
 pub struct AuthTokenJSON {
     pub token: String,
 }
+
+pub struct Log {
+    pub _id: String,
+    pub app_id: String,
+    pub type_: String,
+    pub message: String,
+}
