@@ -1,2 +1,3 @@
 pub mod check_auth_token;
+pub mod get_token_data;
 pub mod has_permission;

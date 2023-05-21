@@ -51,7 +51,8 @@ pub async fn login_handler(
     if user.is_none() {
         let json_response = serde_json::json!({
             "status": "error",
-            "message": "Invalid username or password"
+            "message": "Invalid username or password",
+            "error_code": "invalid_credentials"
         });
 
         return Json(json_response);
@@ -65,6 +66,7 @@ pub async fn login_handler(
 
     let claims = structs::Claims {
         exp: date.timestamp() as usize,
+        user_id: user.unwrap().get_object_id("_id").unwrap().to_hex(),
     };
 
     let token = encode(

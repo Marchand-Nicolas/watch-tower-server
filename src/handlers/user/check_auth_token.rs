@@ -15,7 +15,8 @@ pub async fn check_auth_token_handler(Json(body): Json<AuthTokenJSON>) -> impl I
     }
     let json_response = serde_json::json!({
         "status": "error",
-        "message": "Invalid token or token expired"
+        "message": "Invalid token or token expired",
+        "error_code": "invalid_token"
     });
 
     return Json(json_response);
