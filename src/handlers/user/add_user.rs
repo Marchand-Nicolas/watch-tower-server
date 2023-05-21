@@ -1,18 +1,13 @@
 use std::sync::Arc;
 
-use argon2::{
-    password_hash::{PasswordHasher, SaltString},
-    Argon2,
-};
 use axum::{extract::State, response::IntoResponse, Json};
 use mongodb::bson::doc;
 use serde::Deserialize;
 
 use crate::{
-    config::Config,
     utils::{
         check_auth_token::check_auth_token, get_token_data::get_token_data,
-        has_permission::has_permission,
+        has_permission::has_permission, hash_password::hash_password,
     },
     AppState,
 };
@@ -62,15 +57,9 @@ pub async fn add_user_handler(
     let username = body.username;
     let password = body.password;
     // hash password
-    let config = Config::init();
-    let salt = SaltString::encode_b64(&config.password_salt.as_bytes()).unwrap();
-    let argon2 = Argon2::default();
-    let password_hash = argon2
-        .hash_password(password.as_bytes(), &salt)
-        .unwrap()
-        .to_string();
-    let db = &app_state.db;
+    let password_hash = hash_password(password.clone());
     // check if user already exists
+    let db = &app_state.db;
     let user: Option<mongodb::bson::Document> = db
         .collection("users")
         .find_one(doc! { "username": username.clone() }, None)

@@ -26,5 +26,9 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/set_user_permissions",
             post(handlers::user::set_user_permissions::set_user_permissions_handler),
         )
+        .route(
+            "/change_password",
+            post(handlers::user::change_password::change_password_handler),
+        )
         .with_state(app_state)
 }
