@@ -1,18 +1,18 @@
 use jsonwebtoken::{decode, DecodingKey, Validation};
 
-use crate::{config::Config, structs::Claims};
+use crate::{config::Config, structs::JwtUserClaims};
 
-pub fn get_token_data(jwt_token: String) -> Claims {
+pub fn get_token_data(jwt_token: String) -> JwtUserClaims {
     let config = Config::init();
-    let jwt_secret = &config.jwt_secret;
+    let jwt_secret = &config.jwt_user_secret;
 
-    let token_data = decode::<Claims>(
+    let token_data = decode::<JwtUserClaims>(
         &jwt_token,
         &DecodingKey::from_secret(jwt_secret.as_ref()),
         &Validation::default(),
     );
 
-    let error_object = Claims {
+    let error_object = JwtUserClaims {
         exp: 0,
         user_id: "".to_string(),
     };

@@ -58,13 +58,13 @@ pub async fn login_handler(
         return Json(json_response);
     }
     // if user is found
-    let jwt_secret = &config.jwt_secret;
+    let jwt_secret = &config.jwt_user_secret;
     let jwt_user_max_age = &config.jwt_user_max_age;
 
     // get date in 'jwt_user_max_age' days
     let date = chrono::Utc::now() + chrono::Duration::days(*jwt_user_max_age as i64);
 
-    let claims = structs::Claims {
+    let claims = structs::JwtUserClaims {
         exp: date.timestamp() as usize,
         user_id: user.unwrap().get_object_id("_id").unwrap().to_hex(),
     };

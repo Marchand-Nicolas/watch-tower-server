@@ -27,29 +27,49 @@ pub async fn get_logs_handler(
 
         return Json(json_response);
     }
-
-    let db = &app_state.db;
-    let collection: mongodb::Collection<Document> = db.collection("logs");
-
-    let logs: Vec<structs::Log> = get_logs(app_state).await.unwrap();
+    let app_id = body.app_id;
+    let logs: Vec<structs::Log> = get_logs(app_state, app_id).await.unwrap();
 
     let json_response = serde_json::json!({
         "status": "success",
+        "logs": logs,
     });
 
     return Json(json_response);
 }
 
-async fn get_logs(app_state: Arc<AppState>) -> Result<Vec<structs::Log>, mongodb::error::Error> {
+async fn get_logs(
+    app_state: Arc<AppState>,
+    app_id: String,
+) -> Result<Vec<structs::Log>, mongodb::error::Error> {
     let db = &app_state.db;
     let collection: mongodb::Collection<Document> = db.collection("logs");
 
-    let mut cursor = collection.find(doc! {}, None).await?;
+    let mut cursor = collection
+        .find(
+            doc! {
+                "app_id": app_id
+            },
+            None,
+        )
+        .await?;
 
     let mut result: Vec<structs::Log> = Vec::new();
     while cursor.advance().await? {
         let doc = cursor.current();
-        println!("{:?}", doc);
+        let message = doc.get("message").unwrap().unwrap().as_str().unwrap();
+        let app_id = doc.get("app_id").unwrap().unwrap().as_str().unwrap();
+        let timestamp = doc.get("timestamp").unwrap().unwrap().as_i64().unwrap();
+        let _id = doc.get("_id").unwrap().unwrap().as_object_id().unwrap();
+        let type_ = doc.get("type_").unwrap().unwrap().as_str().unwrap();
+        let log = structs::Log {
+            _id: Some(_id.to_hex()),
+            app_id: Some(app_id.to_string()),
+            type_: Some(type_.to_string()),
+            message: message.to_string(),
+            timestamp: Some(timestamp),
+        };
+        result.push(log);
     }
 
     return Ok(result);
