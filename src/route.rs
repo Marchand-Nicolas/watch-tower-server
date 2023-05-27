@@ -20,10 +20,6 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             post(handlers::user::check_auth_token::check_auth_token_handler),
         )
         .route(
-            "/set_user_permissions",
-            post(handlers::user::set_user_permissions::set_user_permissions_handler),
-        )
-        .route(
             "/change_password",
             post(handlers::user::change_password::change_password_handler),
         )
@@ -31,6 +27,34 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route(
             "/add_user",
             post(handlers::user::admin::add_user::add_user_handler),
+        )
+        .route(
+            "/delete_user",
+            post(handlers::user::admin::delete_user::delete_user_handler),
+        )
+        .route(
+            "/set_user_permissions",
+            post(handlers::user::set_user_permissions::set_user_permissions_handler),
+        )
+        .route(
+            "/get_users",
+            post(handlers::user::admin::get_users::get_users_handler),
+        )
+        .route(
+            "/create_service",
+            post(handlers::user::admin::create_service::create_service_handler),
+        )
+        .route(
+            "/edit_service",
+            post(handlers::user::admin::edit_service::edit_service_handler),
+        )
+        .route(
+            "/delete_service",
+            post(handlers::user::admin::delete_service::delete_service_handler),
+        )
+        .route(
+            "/get_services",
+            post(handlers::user::admin::get_services::get_services_handler),
         )
         // Logs user side
         .route(

@@ -26,3 +26,17 @@ pub struct Log {
     pub message: String,
     pub timestamp: Option<i64>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Service {
+    pub _id: Option<String>,
+    pub app_name: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct User {
+    pub _id: Option<String>,
+    pub username: String,
+    pub password: Option<String>,
+    pub permissions: Vec<String>,
+}

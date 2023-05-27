@@ -52,7 +52,7 @@ pub async fn add_message_handler(
             doc! {
                 "app_id": log.app_id,
                 "timestamp": log.timestamp,
-                "type": log.type_,
+                "type_": log.type_,
                 "message": log.message,
             },
             None,
