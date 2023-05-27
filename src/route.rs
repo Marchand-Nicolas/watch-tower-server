@@ -54,7 +54,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/get_services",
-            post(handlers::user::admin::get_services::get_services_handler),
+            post(handlers::user::get_services::get_services_handler),
         )
         // Logs user side
         .route(
