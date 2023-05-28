@@ -23,6 +23,10 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/change_password",
             post(handlers::user::change_password::change_password_handler),
         )
+        .route(
+            "/get_permissions",
+            post(handlers::user::get_permissions::get_permissions_handler),
+        )
         // Admin user
         .route(
             "/add_user",
@@ -34,7 +38,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/set_user_permissions",
-            post(handlers::user::set_user_permissions::set_user_permissions_handler),
+            post(handlers::user::admin::set_user_permissions::set_user_permissions_handler),
         )
         .route(
             "/get_users",
