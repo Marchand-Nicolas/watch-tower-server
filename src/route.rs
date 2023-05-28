@@ -69,7 +69,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         // Logs service side
         .route(
             "/service/add_message",
-            post(handlers::logs_service_side::add_message::add_message_handler),
+            put(handlers::logs_service_side::add_message::add_message_handler),
         )
         .with_state(app_state)
 }
