@@ -76,9 +76,10 @@ pub async fn add_user_handler(
     }
     // insert into mongodb
     let user = doc! { "username": username, "password": password_hash, "permissions": [] };
-    db.collection("users").insert_one(user, None).await.unwrap();
+    let res = db.collection("users").insert_one(user, None).await.unwrap();
 
     return Json(serde_json::json!({
         "status": "success",
+        "_id": res.inserted_id.to_string(),
     }));
 }
