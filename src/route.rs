@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post},
     Router,
 };
 
@@ -30,7 +30,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/delete_user",
-            post(handlers::user::admin::delete_user::delete_user_handler),
+            delete(handlers::user::admin::delete_user::delete_user_handler),
         )
         .route(
             "/set_user_permissions",
@@ -50,7 +50,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/delete_service",
-            post(handlers::user::admin::delete_service::delete_service_handler),
+            delete(handlers::user::admin::delete_service::delete_service_handler),
         )
         .route(
             "/get_services",
