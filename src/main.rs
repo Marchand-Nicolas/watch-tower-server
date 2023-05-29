@@ -37,9 +37,9 @@ async fn main() {
     let client_options = ClientOptions::parse(database_url).await.unwrap();
     let client = Client::with_options(client_options).unwrap();
 
-    let configured = dbconfig::config(client).await;
+    let configured = dbconfig::config(client.clone()).await;
 
-    if !configured {
+    if configured != true {
         println!("❌ Failed to configure database");
         return;
     }
@@ -47,18 +47,6 @@ async fn main() {
     let db = client.database(database_name);
 
     println!("🔌 Connected to MongoDB");
-
-    // Print the databases in our MongoDB cluster:
-    println!("📙 Databases:");
-    for name in client.list_database_names(None, None).await.unwrap() {
-        println!("- {}", name);
-    }
-
-    // Print the collections in our database:
-    println!("📌 Collections:");
-    for collection_name in db.list_collection_names(None).await.unwrap() {
-        println!("- {}", collection_name);
-    }
 
     let cors = CorsLayer::new()
         .allow_origin("*".parse::<HeaderValue>().unwrap())
