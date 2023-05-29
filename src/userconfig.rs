@@ -22,16 +22,15 @@ pub async fn config(db: mongodb::Database) -> bool {
         .hash_password(root_user_password.as_bytes(), &salt)
         .unwrap()
         .to_string();
-    let collection = db.collection("users");
     if user.is_none() {
         println!("🔧 Creating root user");
         let user = doc! { "username": "root", "password": password_hash, "permissions": ["administrator"] };
-        collection.insert_one(user, None).await.unwrap();
+        users_collections.insert_one(user, None).await.unwrap();
         println!("👤 Created root user");
     } else {
         let auto_update_root_user = config.auto_update_root_user;
         if auto_update_root_user {
-            collection
+            users_collections
                 .update_one(
                     doc! { "username": "root" },
                     doc! { "$set": { "password": password_hash } },
