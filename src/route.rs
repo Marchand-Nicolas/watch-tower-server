@@ -27,6 +27,10 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/get_permissions",
             post(handlers::user::get_permissions::get_permissions_handler),
         )
+        .route(
+            "/get_services",
+            post(handlers::user::get_services::get_services_handler),
+        )
         // Admin user
         .route(
             "/add_user",
@@ -57,8 +61,20 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             delete(handlers::user::admin::delete_service::delete_service_handler),
         )
         .route(
-            "/get_services",
-            post(handlers::user::get_services::get_services_handler),
+            "/add_type",
+            post(handlers::user::admin::add_type::add_type_handler),
+        )
+        .route(
+            "/edit_type",
+            post(handlers::user::admin::edit_type::edit_type_handler),
+        )
+        .route(
+            "/delete_type",
+            delete(handlers::user::admin::delete_type::delete_type_handler),
+        )
+        .route(
+            "/get_types",
+            post(handlers::user::admin::get_types::get_types_handler),
         )
         // Logs user side
         .route(

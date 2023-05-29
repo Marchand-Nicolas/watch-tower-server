@@ -30,6 +30,9 @@ pub async fn config(client: mongodb::Client) -> bool {
         db.create_collection("services", None)
             .await
             .expect("Failed to create collection: services");
+        db.create_collection("types", None)
+            .await
+            .expect("Failed to create collection: types");
     }
     // Print the collections in our database:
     println!("📌 Collections:");
