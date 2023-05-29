@@ -58,12 +58,14 @@ pub async fn create_service_handler(
     // insert into mongodb
     let app = doc! { "app_name": app_name };
     let db = &app_state.db;
-    db.collection("services")
+    let res = db
+        .collection("services")
         .insert_one(app, None)
         .await
         .unwrap();
-
+    let service_id = res.inserted_id.as_object_id().unwrap().to_hex();
     return Json(serde_json::json!({
         "status": "success",
+        "_id": service_id,
     }));
 }

@@ -1,4 +1,5 @@
 mod config;
+mod dbconfig;
 mod handlers;
 mod response;
 mod route;
@@ -36,24 +37,27 @@ async fn main() {
     let client_options = ClientOptions::parse(database_url).await.unwrap();
     let client = Client::with_options(client_options).unwrap();
 
+    let configured = dbconfig::config(client.clone()).await;
+
+    if configured != true {
+        println!("❌ Failed to configure database");
+        return;
+    }
+
     let db = client.database(database_name);
 
-    // Print the databases in our MongoDB cluster:
-    println!("📙 Databases:");
-    for name in client.list_database_names(None, None).await.unwrap() {
-        println!("- {}", name);
-    }
-
-    // Print the collections in our database:
-    println!("📌 Collections:");
-    for collection_name in db.list_collection_names(None).await.unwrap() {
-        println!("- {}", collection_name);
-    }
+    println!("🔌 Connected to MongoDB");
 
     let cors = CorsLayer::new()
-        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
-        .allow_credentials(true)
+        .allow_origin("*".parse::<HeaderValue>().unwrap())
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PATCH,
+            Method::DELETE,
+            Method::OPTIONS,
+            Method::PUT,
+        ])
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
     let app = create_router(Arc::new(AppState {

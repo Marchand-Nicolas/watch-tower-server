@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Router,
 };
 
@@ -23,6 +23,10 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/change_password",
             post(handlers::user::change_password::change_password_handler),
         )
+        .route(
+            "/get_permissions",
+            post(handlers::user::get_permissions::get_permissions_handler),
+        )
         // Admin user
         .route(
             "/add_user",
@@ -30,11 +34,11 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/delete_user",
-            post(handlers::user::admin::delete_user::delete_user_handler),
+            delete(handlers::user::admin::delete_user::delete_user_handler),
         )
         .route(
             "/set_user_permissions",
-            post(handlers::user::set_user_permissions::set_user_permissions_handler),
+            post(handlers::user::admin::set_user_permissions::set_user_permissions_handler),
         )
         .route(
             "/get_users",
@@ -50,7 +54,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         )
         .route(
             "/delete_service",
-            post(handlers::user::admin::delete_service::delete_service_handler),
+            delete(handlers::user::admin::delete_service::delete_service_handler),
         )
         .route(
             "/get_services",
@@ -69,7 +73,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         // Logs service side
         .route(
             "/service/add_message",
-            post(handlers::logs_service_side::add_message::add_message_handler),
+            put(handlers::logs_service_side::add_message::add_message_handler),
         )
         .with_state(app_state)
 }
