@@ -43,7 +43,7 @@ pub async fn add_message_handler(
         log.timestamp = Some(timestamp);
     }
 
-    if (log.type_.is_none()) {
+    if log.type_.is_none() {
         log.type_ = Some("default".to_string());
     }
 

@@ -18,7 +18,7 @@ use dotenv::dotenv;
 use route::create_router;
 use tower_http::cors::CorsLayer;
 
-use mongodb::{bson::Document, options::ClientOptions, Client};
+use mongodb::{options::ClientOptions, Client};
 
 #[derive(Debug)]
 pub struct AppState {
@@ -49,16 +49,8 @@ async fn main() {
 
     println!("🔌 Connected to MongoDB");
 
-    let users_collections = db.collection("users");
-    let user: Option<Document> = users_collections
-        .find_one(None, None)
-        .await
-        .expect("Failed to get users");
-
-    // if no user found, create root user :
-    if user == None {
-        let root_user = userconfig::config(db.clone()).await;
-    }
+    // root user :
+    userconfig::config(db.clone()).await;
 
     let cors = CorsLayer::new()
         .allow_origin("*".parse::<HeaderValue>().unwrap())
