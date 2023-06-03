@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{delete, get, post},
     Router,
 };
 
@@ -89,7 +89,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         // Logs service side
         .route(
             "/service/add_message",
-            put(handlers::logs_service_side::add_message::add_message_handler),
+            post(handlers::logs_service_side::add_message::add_message_handler),
         )
         .with_state(app_state)
 }
