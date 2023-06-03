@@ -46,7 +46,7 @@ pub async fn add_message_handler(
 
     if log.timestamp.is_none() {
         let current_date = chrono::Utc::now();
-        let timestamp = current_date.timestamp();
+        let timestamp = current_date.timestamp_millis();
         log.timestamp = Some(timestamp);
     }
 
