@@ -1,5 +1,6 @@
 mod config;
 mod dbconfig;
+mod filesconfig;
 mod handlers;
 mod response;
 mod route;
@@ -34,6 +35,15 @@ async fn main() {
 
     let database_url = &config.database_url;
     let database_name = &config.database_name;
+
+    // File config
+    let configured = filesconfig::config().await;
+
+    if configured != true {
+        println!("❌ Failed to configure files");
+        return;
+    }
+
     // A Client is needed to connect to MongoDB:
     let client_options = ClientOptions::parse(database_url).await.unwrap();
     let client = Client::with_options(client_options).unwrap();

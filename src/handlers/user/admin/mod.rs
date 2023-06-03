@@ -8,4 +8,5 @@ pub mod edit_service;
 pub mod edit_type;
 pub mod get_types;
 pub mod get_users;
+pub mod set_discord_webhook;
 pub mod set_user_permissions;

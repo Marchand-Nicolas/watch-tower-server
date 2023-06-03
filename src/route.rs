@@ -76,6 +76,10 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             "/get_types",
             post(handlers::user::admin::get_types::get_types_handler),
         )
+        .route(
+            "/set_discord_webhook",
+            post(handlers::user::admin::set_discord_webhook::set_discord_webhook_handler),
+        )
         // Logs user side
         .route(
             "/get_logs",
