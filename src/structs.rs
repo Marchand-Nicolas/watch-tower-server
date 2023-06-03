@@ -40,3 +40,13 @@ pub struct User {
     pub password: Option<String>,
     pub permissions: Vec<String>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Type {
+    pub _id: Option<String>,
+    pub name: String,
+    pub color: String,
+    pub icon: String,
+    pub importance: i32,
+    pub notifications: Vec<String>,
+}

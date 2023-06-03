@@ -4,6 +4,7 @@ mod handlers;
 mod response;
 mod route;
 mod structs;
+mod userconfig;
 mod utils;
 
 use config::Config;
@@ -47,6 +48,9 @@ async fn main() {
     let db = client.database(database_name);
 
     println!("🔌 Connected to MongoDB");
+
+    // root user :
+    userconfig::config(db.clone()).await;
 
     let cors = CorsLayer::new()
         .allow_origin("*".parse::<HeaderValue>().unwrap())

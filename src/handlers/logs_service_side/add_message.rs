@@ -4,14 +4,21 @@ use axum::{extract::State, response::IntoResponse, Json};
 use mongodb::bson::{doc, Document};
 use serde::Deserialize;
 
-use crate::{
-    structs, utils::logs_service_side::check_service_token::check_service_token, AppState,
-};
+use crate::{utils::logs_service_side::check_service_token::check_service_token, AppState};
+
+#[derive(Deserialize)]
+pub struct LogInput {
+    _id: Option<String>,
+    app_id: Option<String>,
+    r#type: Option<String>,
+    message: String,
+    timestamp: Option<i64>,
+}
 
 #[derive(Deserialize)]
 pub struct AddMessageInput {
     token: String,
-    log: structs::Log,
+    log: LogInput,
 }
 
 pub async fn add_message_handler(
@@ -39,12 +46,12 @@ pub async fn add_message_handler(
 
     if log.timestamp.is_none() {
         let current_date = chrono::Utc::now();
-        let timestamp = current_date.timestamp();
+        let timestamp = current_date.timestamp_millis();
         log.timestamp = Some(timestamp);
     }
 
-    if (log.type_.is_none()) {
-        log.type_ = Some("default".to_string());
+    if log.r#type.is_none() {
+        log.r#type = Some("default".to_string());
     }
 
     collection
@@ -52,7 +59,7 @@ pub async fn add_message_handler(
             doc! {
                 "app_id": log.app_id,
                 "timestamp": log.timestamp,
-                "type_": log.type_,
+                "type_": log.r#type,
                 "message": log.message,
             },
             None,
