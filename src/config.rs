@@ -6,6 +6,8 @@ pub struct Config {
     pub jwt_service_secret: String,
     pub jwt_user_max_age: i32,
     pub password_salt: String,
+    pub root_user_password: String,
+    pub auto_update_root_user: bool,
 }
 
 impl Config {
@@ -18,6 +20,11 @@ impl Config {
         let jwt_user_max_age =
             std::env::var("JWT_USER_MAX_AGE").expect("JWT_USER_MAX_AGE must be set");
         let password_salt = std::env::var("PASSWORD_SALT").expect("PASSWORD_SALT must be set");
+        let root_user_password =
+            std::env::var("ROOT_USER_PASSWORD").expect("ROOT_USER_PASSWORD must be set");
+        let auto_update_root_user =
+            std::env::var("AUTO_UPDATE_ROOT_USER") == Ok(String::from("true"));
+
         Config {
             database_url,
             database_name,
@@ -25,6 +32,8 @@ impl Config {
             jwt_service_secret,
             jwt_user_max_age: jwt_user_max_age.parse::<i32>().unwrap(),
             password_salt: password_salt,
+            root_user_password,
+            auto_update_root_user,
         }
     }
 }

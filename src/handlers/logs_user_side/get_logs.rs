@@ -9,7 +9,8 @@ use crate::{structs, utils::check_auth_token::check_auth_token, AppState};
 #[derive(Deserialize)]
 pub struct GetLogsInput {
     token: String,
-    app_id: String,
+    target_apps: Option<Vec<String>>,
+    target_types: Option<Vec<String>>,
 }
 
 pub async fn get_logs_handler(
@@ -27,12 +28,34 @@ pub async fn get_logs_handler(
 
         return Json(json_response);
     }
-    let app_id = body.app_id;
-    let logs: Vec<structs::Log> = get_logs(app_state, app_id).await.unwrap();
+    let app_ids = body.target_apps;
+    let types = body.target_types;
+    let mut res_logs: std::collections::HashMap<String, Vec<structs::Log>> =
+        std::collections::HashMap::new();
+    for app_id in app_ids.unwrap() {
+        let logs: Vec<structs::Log> = get_logs(app_state.clone(), app_id.clone()).await.unwrap();
+        let mut logs: Vec<structs::Log> = logs
+            .into_iter()
+            .filter(|log| {
+                if types.is_none() {
+                    return true;
+                }
+                let types = types.clone().unwrap();
+                let type_ = log.type_.clone().unwrap();
+                return types.contains(&type_);
+            })
+            .collect();
+        logs.sort_by(|a, b| {
+            let a_timestamp = a.timestamp.clone().unwrap();
+            let b_timestamp = b.timestamp.clone().unwrap();
+            return a_timestamp.cmp(&b_timestamp);
+        });
+        res_logs.insert(app_id, logs);
+    }
 
     let json_response = serde_json::json!({
         "status": "success",
-        "logs": logs,
+        "logs": res_logs
     });
 
     return Json(json_response);

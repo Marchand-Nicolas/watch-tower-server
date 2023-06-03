@@ -26,10 +26,13 @@ pub async fn config(client: mongodb::Client) -> bool {
             .expect("Failed to create collection: posts");
         db.create_collection("expired_tokens", None)
             .await
-            .expect("Failed to create collection: services");
-        db.create_collection("expired_tokens", None)
+            .expect("Failed to create collection: expired_tokens");
+        db.create_collection("services", None)
             .await
             .expect("Failed to create collection: services");
+        db.create_collection("types", None)
+            .await
+            .expect("Failed to create collection: types");
     }
     // Print the collections in our database:
     println!("📌 Collections:");

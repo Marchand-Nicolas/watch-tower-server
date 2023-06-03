@@ -1,7 +1,11 @@
+pub mod add_type;
 pub mod add_user;
 pub mod create_service;
 pub mod delete_service;
+pub mod delete_type;
 pub mod delete_user;
 pub mod edit_service;
+pub mod edit_type;
+pub mod get_types;
 pub mod get_users;
 pub mod set_user_permissions;
