@@ -41,8 +41,6 @@ pub async fn get_logs_handler(
                     return true;
                 }
                 let types = types.clone().unwrap();
-                println!("{:?}", types);
-                println!("{:?}", log.type_.clone().unwrap());
                 let type_ = log.type_.clone().unwrap();
                 return types.contains(&type_);
             })
