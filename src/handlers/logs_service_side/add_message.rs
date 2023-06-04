@@ -111,16 +111,10 @@ pub async fn add_message_handler(
             res.inserted_id.as_object_id().unwrap().to_hex()
         );
 
-        let embeds = serde_json::json!([{
-            "title": "New log",
-            "description": message,
-            "color": 0x00ff00
-        }]);
-
         let client = reqwest::Client::new();
         client
             .post(discord_webhook)
-            .form(&serde_json::json!({ "content": message,  }))
+            .form(&serde_json::json!({ "content": message }))
             .send()
             .await
             .unwrap();
