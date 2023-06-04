@@ -5,7 +5,12 @@ use mongodb::bson::{doc, Document};
 use serde::Deserialize;
 use std::fs::File;
 
-use crate::{utils::logs_service_side::check_service_token::check_service_token, AppState};
+use crate::{
+    utils::logs_service_side::{
+        check_service_token::check_service_token, get_service_token_data::get_service_token_data,
+    },
+    AppState,
+};
 
 #[derive(Deserialize)]
 pub struct LogInput {
@@ -41,6 +46,19 @@ pub async fn add_message_handler(
     }
 
     let mut log = body.log;
+    let token_data = Some(get_service_token_data(token.clone()));
+    let token_app_id = token_data.unwrap().unwrap().app_id;
+    let app_id = log.app_id.clone().unwrap();
+
+    if token_app_id != app_id {
+        let json_response = serde_json::json!({
+            "status": "error",
+            "message": format!("You specified a wrong app_id. You specified {} but your token contains {}",  log.app_id.clone().unwrap(), token_app_id),
+            "error_code": "invalid_app_id"
+        });
+
+        return Json(json_response);
+    }
 
     let db = &app_state.db;
     let collection: mongodb::Collection<Document> = db.collection("logs");
@@ -91,17 +109,18 @@ pub async fn add_message_handler(
             None,
         )
         .await
-        .unwrap()
         .unwrap();
 
-    let notifications = type_.get("notifications").unwrap().as_array().unwrap();
+    if !type_.is_none() {
+        let type_ = type_.unwrap();
+        let notifications = type_.get("notifications").unwrap().as_array().unwrap();
 
-    if notifications.contains(&"discord".to_string().into()) {
-        let config_file = File::open("config.json").unwrap();
-        let config: serde_json::Value = serde_json::from_reader(config_file).unwrap();
-        let discord_webhook = config["discord_webhook"].as_str().unwrap();
+        if notifications.contains(&"discord".to_string().into()) {
+            let config_file = File::open("config.json").unwrap();
+            let config: serde_json::Value = serde_json::from_reader(config_file).unwrap();
+            let discord_webhook = config["discord_webhook"].as_str().unwrap();
 
-        let message = format!(
+            let message = format!(
             "<t:{}> __{}__\n**{}**\n{}\n➡️ [open](https://watch-t.vercel.app/dashboard?page=logs&services={}#log_{})",
             log.timestamp.unwrap(),
             service.get("app_name").unwrap().as_str().unwrap(),
@@ -111,13 +130,14 @@ pub async fn add_message_handler(
             res.inserted_id.as_object_id().unwrap().to_hex()
         );
 
-        let client = reqwest::Client::new();
-        client
-            .post(discord_webhook)
-            .form(&serde_json::json!({ "content": message }))
-            .send()
-            .await
-            .unwrap();
+            let client = reqwest::Client::new();
+            client
+                .post(discord_webhook)
+                .form(&serde_json::json!({ "content": message }))
+                .send()
+                .await
+                .unwrap();
+        }
     }
 
     let json_response = serde_json::json!({
