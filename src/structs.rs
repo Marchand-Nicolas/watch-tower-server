@@ -49,4 +49,5 @@ pub struct Type {
     pub icon: String,
     pub importance: i32,
     pub notifications: Vec<String>,
+    pub parents: Vec<String>,
 }

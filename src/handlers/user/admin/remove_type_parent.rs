@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{extract::State, response::IntoResponse, Json};
-use mongodb::bson::doc;
+use mongodb::bson::{doc, Document};
 use serde::Deserialize;
 
 use crate::{
@@ -13,14 +13,15 @@ use crate::{
 };
 
 #[derive(Deserialize)]
-pub struct AddTypeInput {
+pub struct RemoveTypeParentInput {
     token: String,
-    name: String,
+    type_id: String,
+    parent_id: String,
 }
 
-pub async fn add_type_handler(
+pub async fn remove_type_parent_handler(
     State(app_state): State<Arc<AppState>>,
-    Json(body): Json<AddTypeInput>,
+    Json(body): Json<RemoveTypeParentInput>,
 ) -> impl IntoResponse {
     let token = body.token;
     let valid = check_auth_token(token.clone());
@@ -53,21 +54,31 @@ pub async fn add_type_handler(
         return Json(json_response);
     }
 
-    let name = body.name;
-    // insert into mongodb
+    let type_id = mongodb::bson::oid::ObjectId::parse_str(&body.type_id).unwrap();
+    let parent_id = body.parent_id;
+
     let db = app_state.db.clone();
-    let type_ = doc! { "name": name,
-         "color": "gray",
-         "icon": "default",
-         "importance": 0,
-         "notifications": [],
-         "parents": [],
-    };
-    let collection = db.collection("types");
-    let res = collection.insert_one(type_, None).await.unwrap();
-    let type_id = res.inserted_id.as_object_id().unwrap().to_hex();
+
+    let collection: mongodb::Collection<Document> = db.collection("types");
+    let res = collection
+        .update_one(
+            doc! {"_id": type_id},
+            doc! {"$pull": {"parents": parent_id}},
+            None,
+        )
+        .await
+        .unwrap();
+
+    if res.modified_count == 0 {
+        let json_response = serde_json::json!({
+            "status": "error",
+            "message": "Type not found",
+            "error_code": "type_not_found"
+        });
+
+        return Json(json_response);
+    }
     return Json(serde_json::json!({
         "status": "success",
-        "_id": type_id
     }));
 }

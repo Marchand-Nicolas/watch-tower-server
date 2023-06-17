@@ -1,4 +1,5 @@
 pub mod add_type;
+pub mod add_type_parent;
 pub mod add_user;
 pub mod create_service;
 pub mod delete_service;
@@ -8,5 +9,6 @@ pub mod edit_service;
 pub mod edit_type;
 pub mod get_types;
 pub mod get_users;
+pub mod remove_type_parent;
 pub mod set_discord_webhook;
 pub mod set_user_permissions;

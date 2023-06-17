@@ -80,6 +80,11 @@ async fn get_types(app_state: Arc<AppState>) -> Result<Vec<structs::Type>, mongo
         let notifcations: Vec<String> = notifications_cursor
             .map(|notification| notification.unwrap().as_str().unwrap().to_string())
             .collect();
+        let parents = doc.get("parents").unwrap().unwrap().as_array().unwrap();
+        let parents_cursor = parents.into_iter();
+        let parents: Vec<String> = parents_cursor
+            .map(|parent| parent.unwrap().as_str().unwrap().to_string())
+            .collect();
 
         let type_ = structs::Type {
             _id: Some(_id.to_hex()),
@@ -88,6 +93,7 @@ async fn get_types(app_state: Arc<AppState>) -> Result<Vec<structs::Type>, mongo
             icon: icon.to_string(),
             importance: importance,
             notifications: notifcations,
+            parents: parents,
         };
         result.push(type_);
     }

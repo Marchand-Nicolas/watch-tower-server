@@ -77,6 +77,14 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
             post(handlers::user::admin::get_types::get_types_handler),
         )
         .route(
+            "/add_type_parent",
+            post(handlers::user::admin::add_type_parent::add_type_parent_handler),
+        )
+        .route(
+            "/remove_type_parent",
+            post(handlers::user::admin::remove_type_parent::remove_type_parent_handler),
+        )
+        .route(
             "/set_discord_webhook",
             post(handlers::user::admin::set_discord_webhook::set_discord_webhook_handler),
         )
